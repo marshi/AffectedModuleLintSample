@@ -2,9 +2,9 @@
 
 Sample project for making runAffectedLint task using [dropbox/AffectedModuleDetector](https://github.com/dropbox/AffectedModuleDetector).
 
-dropbox/AffectedModuleDetector have API which detect affected modules.
+dropbox/AffectedModuleDetector has API which detect affected modules.
 
-The API can be also used to execute lint task to only affected modules.
+The API can also be used to execute lint task to only affected modules.
 
 ## how to run
 
