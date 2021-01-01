@@ -1,0 +1,50 @@
+apply plugin: "com.dropbox.affectedmoduledetector"
+
+affectedModuleDetector {
+    baseDir = "${project.rootDir}"
+    pathsAffectingAllModules = [
+            "buildSrc/"
+    ]
+    compareFrom = "ForkCommit"
+    logFolder = "${project.rootDir}"
+}
+
+subprojects { p ->
+    // 任意のvariantごとに実行したいtaskを設定する.
+    afterEvaluate {
+        conf(p, {
+            affectedTestConfiguration { jvmTestTask = "testProductDebugUnitTest" }
+            affectedLintConfiguration {
+                lint = "lintProductDebug"
+                ktlint = "ktlintProductDebugCheck"
+            }
+        }, {
+            affectedTestConfiguration { jvmTestTask = "testDebugUnitTest" }
+            affectedLintConfiguration {
+                lint = "lintDebug"
+                ktlint = "ktlintCheck"
+            }
+        }, {
+            affectedTestConfiguration { jvmTestTask = "test" }
+            affectedLintConfiguration { ktlint = "ktlintCheck" }
+        })
+    }
+}
+
+def conf(Project project, Closure productDebug, Closure debug, Closure java) {
+    if (project.getPlugins().hasPlugin('android') ||
+            project.getPlugins().hasPlugin('android-library')) {
+        project.android {
+            variantFilter { variant ->
+                if (variant.name == "productDebug") {
+                    productDebug()
+                }
+                if (variant.name == "debug") {
+                    debug()
+                }
+            }
+        }
+    } else {
+        java()
+    }
+}
